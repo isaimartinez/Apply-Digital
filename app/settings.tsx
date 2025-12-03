@@ -1,21 +1,22 @@
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { DEFAULT_TOPICS, usePreferencesStore } from '@/store/preferences';
+import * as Device from 'expo-device';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Switch,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
   Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import * as Device from 'expo-device';
-import { usePreferencesStore, DEFAULT_TOPICS } from '@/store/preferences';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
@@ -59,12 +60,14 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { borderBottomColor: colors.icon }]}>
         <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
-        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-          <IconSymbol name="xmark" size={24} color={colors.tint} />
-        </TouchableOpacity>
+        {Platform.OS === 'ios' && (
+          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+            <IconSymbol name="xmark" size={24} color={colors.tint} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <ScrollView style={styles.content}>
