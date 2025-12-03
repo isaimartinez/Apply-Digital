@@ -17,6 +17,7 @@ export class HackerNewsAPI {
 
   async fetchArticles(query: string = 'mobile'): Promise<HackerNewsResponse> {
     try {
+      console.log(`API: Fetching articles with query="${query}"`);
       const response = await axios.get<HackerNewsResponse>(
         `${API_BASE_URL}/search_by_date`,
         {
@@ -25,8 +26,10 @@ export class HackerNewsAPI {
           },
         }
       );
+      console.log(`API: Received ${response.data.hits.length} articles`);
       return response.data;
     } catch (error) {
+      console.error('API: Fetch failed:', error);
       if (axios.isAxiosError(error)) {
         throw new Error(`Failed to fetch articles: ${error.message}`);
       }
