@@ -1,29 +1,25 @@
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 import { hackerNewsAPI } from './api';
-import { storageService } from './storage';
 import { notificationService } from './notifications';
+import { storageService } from './storage';
 
 const BACKGROUND_FETCH_TASK = 'FETCH_NEW_ARTICLES';
 
-// Define the background task
 TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   try {
     console.log('Background fetch started');
 
-    // Get user preferences
     const preferences = await storageService.getUserPreferences();
 
     if (!preferences.notificationsEnabled) {
       console.log('Notifications disabled, skipping fetch');
-      return BackgroundFetch.BackgroundFetchResult.NoData;
+      return BackgroundTask.BackgroundTaskResult.Success;
     }
 
-    // Get cached articles to compare
     const cachedArticles = await storageService.getArticles();
     const cachedIds = new Set(cachedArticles.map(a => a.objectID));
 
-    // Fetch new articles for each selected topic
     const allNewArticles = [];
 
     for (const topic of preferences.selectedTopics) {
@@ -35,25 +31,23 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
     if (allNewArticles.length > 0) {
       console.log(`Found ${allNewArticles.length} new articles`);
 
-      // Save new articles
       const updatedArticles = [...allNewArticles, ...cachedArticles];
       await storageService.saveArticles(updatedArticles);
 
-      // Send notification
       if (allNewArticles.length === 1) {
         await notificationService.scheduleNewArticleNotification(allNewArticles[0]);
       } else {
         await notificationService.scheduleMultipleArticlesNotification(allNewArticles.length);
       }
 
-      return BackgroundFetch.BackgroundFetchResult.NewData;
+      return BackgroundTask.BackgroundTaskResult.Success;
     }
 
     console.log('No new articles found');
-    return BackgroundFetch.BackgroundFetchResult.NoData;
+    return BackgroundTask.BackgroundTaskResult.Success;
   } catch (error) {
     console.error('Background fetch failed:', error);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
+    return BackgroundTask.BackgroundTaskResult.Failed;
   }
 });
 
@@ -71,10 +65,8 @@ export class BackgroundFetchService {
 
   async registerBackgroundFetch(): Promise<void> {
     try {
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-        minimumInterval: 60 * 15, // 15 minutes
-        stopOnTerminate: false,
-        startOnBoot: true,
+      await BackgroundTask.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+        minimumInterval: 15, 
       });
 
       console.log('Background fetch registered successfully');
@@ -85,15 +77,15 @@ export class BackgroundFetchService {
 
   async unregisterBackgroundFetch(): Promise<void> {
     try {
-      await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
+      await BackgroundTask.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
       console.log('Background fetch unregistered successfully');
     } catch (error) {
       console.error('Failed to unregister background fetch:', error);
     }
   }
 
-  async getStatus(): Promise<BackgroundFetch.BackgroundFetchStatus> {
-    return await BackgroundFetch.getStatusAsync();
+  async getStatus(): Promise<BackgroundTask.BackgroundTaskStatus> {
+    return await BackgroundTask.getStatusAsync();
   }
 
   async isRegistered(): Promise<boolean> {
