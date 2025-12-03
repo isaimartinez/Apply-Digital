@@ -1,8 +1,8 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Article } from '@/types/article';
 import React, { useRef } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
-import { Swipeable } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { ArticleItem } from './article-item';
 import { IconSymbol } from './ui/icon-symbol';
 
@@ -22,7 +22,7 @@ export function SwipeableArticleItem({
   isFavorite,
 }: SwipeableArticleItemProps) {
   const colorScheme = useColorScheme();
-  const swipeableRef = useRef<Swipeable>(null);
+  const swipeableRef = useRef<SwipeableMethods>(null);
 
   const handlePress = () => {
     console.log('SwipeableArticleItem: Press detected');
@@ -30,30 +30,14 @@ export function SwipeableArticleItem({
     onPress();
   };
 
-  const renderRightActions = (
-    progress: Animated.AnimatedInterpolation<number>,
-    dragX: Animated.AnimatedInterpolation<number>
-  ) => {
-    const trans = dragX.interpolate({
-      inputRange: [-100, 0],
-      outputRange: [0, 100],
-      extrapolate: 'clamp',
-    });
-
+  const renderRightActions = () => {
     return (
-      <Animated.View
-        style={[
-          styles.deleteAction,
-          {
-            transform: [{ translateX: trans }],
-          },
-        ]}
-      >
+      <View style={styles.deleteAction}>
         <View style={styles.deleteContent}>
           <IconSymbol name="trash" size={24} color="#FFFFFF" />
           <Text style={styles.deleteText}>Delete</Text>
         </View>
-      </Animated.View>
+      </View>
     );
   };
 
