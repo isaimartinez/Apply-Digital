@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   FlatList,
-  RefreshControl,
   View,
   Text,
-  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
@@ -16,32 +14,18 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/constants/theme';
 import { Article } from '@/types/article';
 
-export default function ArticlesScreen() {
+export default function FavoritesScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   const {
-    loading,
-    error,
-    fetchArticles,
-    loadFromStorage,
     toggleFavorite,
     deleteArticle,
-    getVisibleArticles,
+    getFavoriteArticles,
     articleStates,
   } = useArticlesStore();
 
-  const visibleArticles = getVisibleArticles();
-
-  useEffect(() => {
-    loadFromStorage().then(() => {
-      fetchArticles();
-    });
-  }, []);
-
-  const handleRefresh = () => {
-    fetchArticles();
-  };
+  const favoriteArticles = getFavoriteArticles();
 
   const handleArticlePress = (article: Article) => {
     const url = article.story_url || article.url;
@@ -75,62 +59,32 @@ export default function ArticlesScreen() {
     );
   };
 
-  const renderEmpty = () => {
-    if (loading) {
-      return (
-        <View style={styles.emptyContainer}>
-          <ActivityIndicator size="large" color={colors.tint} />
-        </View>
-      );
-    }
-
-    if (error) {
-      return (
-        <View style={styles.emptyContainer}>
-          <Text style={[styles.emptyText, { color: colors.text }]}>
-            Failed to load articles
-          </Text>
-          <Text style={[styles.emptySubtext, { color: colors.icon }]}>
-            {error}
-          </Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={[styles.emptyText, { color: colors.text }]}>
-          No articles available
-        </Text>
-        <Text style={[styles.emptySubtext, { color: colors.icon }]}>
-          Pull to refresh
-        </Text>
-      </View>
-    );
-  };
+  const renderEmpty = () => (
+    <View style={styles.emptyContainer}>
+      <Text style={[styles.emptyText, { color: colors.text }]}>
+        No favorite articles yet
+      </Text>
+      <Text style={[styles.emptySubtext, { color: colors.icon }]}>
+        Articles you favorite will appear here
+      </Text>
+    </View>
+  );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
         <View style={[styles.header, { borderBottomColor: colors.icon }]}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>
-            Hacker News Articles
+            Favorite Articles
           </Text>
         </View>
 
         <FlatList
-          data={visibleArticles}
+          data={favoriteArticles}
           renderItem={renderArticle}
           keyExtractor={(item) => item.objectID}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={handleRefresh}
-              tintColor={colors.tint}
-            />
-          }
           ListEmptyComponent={renderEmpty}
-          contentContainerStyle={visibleArticles.length === 0 ? styles.emptyList : undefined}
+          contentContainerStyle={favoriteArticles.length === 0 ? styles.emptyList : undefined}
         />
       </SafeAreaView>
     </GestureHandlerRootView>
@@ -162,8 +116,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 8,
+    textAlign: 'center',
   },
   emptySubtext: {
     fontSize: 14,
+    textAlign: 'center',
   },
 });
