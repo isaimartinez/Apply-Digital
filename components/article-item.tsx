@@ -59,11 +59,11 @@ export function ArticleItem({
 
       <View style={styles.actions}>
         {showRestoreButton && onRestore ? (
-          <TouchableOpacity onPress={onRestore} style={styles.iconButton}>
+          <TouchableOpacity onPress={onRestore} style={styles.iconButton} accessibilityLabel="restore article">
             <IconSymbol name="arrow.uturn.backward" size={20} color={colors.tint} />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={onToggleFavorite} style={styles.iconButton}>
+          <TouchableOpacity onPress={onToggleFavorite} style={styles.iconButton} accessibilityLabel="toggle favorite">
             <IconSymbol
               name={isFavorite ? 'heart.fill' : 'heart'}
               size={20}
