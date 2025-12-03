@@ -163,6 +163,17 @@ export default function SettingsScreen() {
         )}
 
         <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Developer Tools</Text>
+          <TouchableOpacity
+            style={[styles.debugButton, { backgroundColor: colors.tint }]}
+            onPress={() => router.push('/test-notifications')}
+          >
+            <IconSymbol name="gear" size={20} color="#FFFFFF" />
+            <Text style={styles.debugButtonText}>Test Notifications & Background Fetch</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>About</Text>
           <Text style={[styles.aboutText, { color: colors.icon }]}>
             This app fetches and displays articles from Hacker News using the Algolia API.
@@ -283,5 +294,18 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     lineHeight: 20,
+  },
+  debugButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  debugButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
