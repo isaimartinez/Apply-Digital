@@ -1,9 +1,9 @@
-import React from 'react';
-import { StyleSheet, View, Text, Animated } from 'react-native';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Article } from '@/types/article';
+import React, { useRef } from 'react';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { ArticleItem } from './article-item';
-import { Article } from '@/types/article';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { IconSymbol } from './ui/icon-symbol';
 
 interface SwipeableArticleItemProps {
@@ -22,6 +22,13 @@ export function SwipeableArticleItem({
   isFavorite,
 }: SwipeableArticleItemProps) {
   const colorScheme = useColorScheme();
+  const swipeableRef = useRef<Swipeable>(null);
+
+  const handlePress = () => {
+    console.log('SwipeableArticleItem: Press detected');
+    swipeableRef.current?.close();
+    onPress();
+  };
 
   const renderRightActions = (
     progress: Animated.AnimatedInterpolation<number>,
@@ -52,13 +59,16 @@ export function SwipeableArticleItem({
 
   return (
     <Swipeable
+      ref={swipeableRef}
       renderRightActions={renderRightActions}
       onSwipeableOpen={onDelete}
       overshootRight={false}
+      friction={2}
+      rightThreshold={40}
     >
       <ArticleItem
         article={article}
-        onPress={onPress}
+        onPress={handlePress}
         onToggleFavorite={onToggleFavorite}
         isFavorite={isFavorite}
       />

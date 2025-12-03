@@ -1,7 +1,7 @@
-import { create } from 'zustand';
-import { Article, ArticleState } from '@/types/article';
 import { hackerNewsAPI } from '@/services/api';
 import { storageService } from '@/services/storage';
+import { Article, ArticleState } from '@/types/article';
+import { create } from 'zustand';
 
 interface ArticlesStore {
   articles: Article[];

@@ -55,13 +55,20 @@ export default function ArticlesScreen() {
   };
 
   const handleArticlePress = (article: Article) => {
-    const url = article.story_url || article.url;
-    if (url) {
-      router.push({
-        pathname: '/article/[id]',
-        params: { id: article.objectID, url },
-      });
-    }
+    console.log('Article pressed:', {
+      id: article.objectID,
+      title: article.story_title || article.title,
+      story_url: article.story_url,
+      url: article.url,
+    });
+
+    const url = article.story_url || article.url || `https://news.ycombinator.com/item?id=${article.objectID}`;
+
+    console.log('Navigating to:', url);
+    router.push({
+      pathname: '/article/[id]',
+      params: { id: article.objectID, url },
+    });
   };
 
   const handleToggleFavorite = (articleId: string) => {

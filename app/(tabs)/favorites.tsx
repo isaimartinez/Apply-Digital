@@ -31,13 +31,12 @@ export default function FavoritesScreen() {
   });
 
   const handleArticlePress = (article: Article) => {
-    const url = article.story_url || article.url;
-    if (url) {
-      router.push({
-        pathname: '/article/[id]',
-        params: { id: article.objectID, url },
-      });
-    }
+    const url = article.story_url || article.url || `https://news.ycombinator.com/item?id=${article.objectID}`;
+
+    router.push({
+      pathname: '/article/[id]',
+      params: { id: article.objectID, url },
+    });
   };
 
   const handleToggleFavorite = (articleId: string) => {

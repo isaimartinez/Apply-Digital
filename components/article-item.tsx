@@ -28,10 +28,15 @@ export function ArticleItem({
 
   const timeAgo = formatDistanceToNow(new Date(article.created_at), { addSuffix: true });
 
+  const handlePress = () => {
+    console.log('ArticleItem: TouchableOpacity pressed for', article.objectID);
+    onPress();
+  };
+
   return (
     <TouchableOpacity
       style={[styles.container, { backgroundColor: colors.background, borderBottomColor: colors.icon }]}
-      onPress={onPress}
+      onPress={handlePress}
       activeOpacity={0.7}
     >
       <View style={styles.content}>
