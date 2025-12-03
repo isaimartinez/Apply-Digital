@@ -1,18 +1,18 @@
+import { SwipeableArticleItem } from '@/components/swipeable-article-item';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useArticlesStore } from '@/store/articles';
+import { Article } from '@/types/article';
+import { router } from 'expo-router';
 import React from 'react';
 import {
-  StyleSheet,
   FlatList,
-  View,
+  StyleSheet,
   Text,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useArticlesStore } from '@/store/articles';
-import { SwipeableArticleItem } from '@/components/swipeable-article-item';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { Article } from '@/types/article';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function FavoritesScreen() {
   const colorScheme = useColorScheme();
@@ -21,11 +21,14 @@ export default function FavoritesScreen() {
   const {
     toggleFavorite,
     deleteArticle,
-    getFavoriteArticles,
     articleStates,
+    articles,
   } = useArticlesStore();
 
-  const favoriteArticles = getFavoriteArticles();
+  const favoriteArticles = articles.filter(article => {
+    const state = articleStates[article.objectID];
+    return state?.isFavorite && !state?.isDeleted;
+  });
 
   const handleArticlePress = (article: Article) => {
     const url = article.story_url || article.url;

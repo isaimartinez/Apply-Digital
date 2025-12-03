@@ -1,20 +1,22 @@
+import { SwipeableArticleItem } from '@/components/swipeable-article-item';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useArticlesStore } from '@/store/articles';
+import { Article } from '@/types/article';
+import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import {
-  StyleSheet,
+  ActivityIndicator,
   FlatList,
   RefreshControl,
-  View,
+  StyleSheet,
   Text,
-  ActivityIndicator,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useArticlesStore } from '@/store/articles';
-import { SwipeableArticleItem } from '@/components/swipeable-article-item';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { Article } from '@/types/article';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ArticlesScreen() {
   const colorScheme = useColorScheme();
@@ -27,15 +29,24 @@ export default function ArticlesScreen() {
     loadFromStorage,
     toggleFavorite,
     deleteArticle,
-    getVisibleArticles,
     articleStates,
+    articles,
   } = useArticlesStore();
 
-  const visibleArticles = getVisibleArticles();
+  const visibleArticles = articles.filter(article => {
+    const state = articleStates[article.objectID];
+    return !state?.isDeleted;
+  });
 
   useEffect(() => {
+    console.log('ArticlesScreen: Initial load started');
     loadFromStorage().then(() => {
-      fetchArticles();
+      console.log('ArticlesScreen: Storage loaded, fetching articles...');
+      fetchArticles().then(() => {
+        console.log('ArticlesScreen: Fetch completed');
+      }).catch((err) => {
+        console.error('ArticlesScreen: Fetch error:', err);
+      });
     });
   }, []);
 
@@ -116,6 +127,12 @@ export default function ArticlesScreen() {
           <Text style={[styles.headerTitle, { color: colors.text }]}>
             Hacker News Articles
           </Text>
+          <TouchableOpacity
+            onPress={() => router.push('/settings')}
+            style={styles.settingsButton}
+          >
+            <IconSymbol name="gear" size={24} color={colors.tint} />
+          </TouchableOpacity>
         </View>
 
         <FlatList
@@ -142,12 +159,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
+  },
+  settingsButton: {
+    padding: 4,
   },
   emptyList: {
     flex: 1,

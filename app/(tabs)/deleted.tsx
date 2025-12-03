@@ -1,17 +1,17 @@
+import { ArticleItem } from '@/components/article-item';
+import { Colors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useArticlesStore } from '@/store/articles';
+import { Article } from '@/types/article';
+import { router } from 'expo-router';
 import React from 'react';
 import {
-  StyleSheet,
   FlatList,
-  View,
+  StyleSheet,
   Text,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { useArticlesStore } from '@/store/articles';
-import { ArticleItem } from '@/components/article-item';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Colors } from '@/constants/theme';
-import { Article } from '@/types/article';
 
 export default function DeletedScreen() {
   const colorScheme = useColorScheme();
@@ -20,11 +20,14 @@ export default function DeletedScreen() {
   const {
     restoreArticle,
     toggleFavorite,
-    getDeletedArticles,
     articleStates,
+    articles,
   } = useArticlesStore();
 
-  const deletedArticles = getDeletedArticles();
+  const deletedArticles = articles.filter(article => {
+    const state = articleStates[article.objectID];
+    return state?.isDeleted;
+  });
 
   const handleArticlePress = (article: Article) => {
     const url = article.story_url || article.url;
